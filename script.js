@@ -54,37 +54,32 @@ function determineWinner(playerChoice, computerChoice) {
     return { result, playerWins };
 }
 
+// ===== UI MANAGEMENT =====
+function getGameResultMessage() {
+    if (gameState.humanScore > gameState.computerScore) {
+        return "Congratulations! You won the game! 🎉";
+    } else if (gameState.computerScore > gameState.humanScore) {
+        return "Game Over! The computer won! 😔";
+    } else {
+        return "It's a tie! Good game! 🤝";
+    }
+}
+
 function endGame() {
-    // Clean up any existing game over message
     removeElementById("gameOver");
     
-    // Determine winner
-    let gameResult;
-    if (gameState.humanScore > gameState.computerScore) {
-        gameResult = "Congratulations! You won the game! 🎉";
-    } else if (gameState.computerScore > gameState.humanScore) {
-        gameResult = "Game Over! The computer won! 😔";
-    } else {
-        gameResult = "It's a tie! Good game! 🤝";
-    }
-    
-    // Display final results
+    const gameResult = getGameResultMessage();
     const finalScore = `Final Score - You: ${gameState.humanScore}, Computer: ${gameState.computerScore}`;
     const gameOverText = `${gameResult}\n${finalScore}\n\nClick any button to play again!`;
     
     createResultElement(gameOverText, "gameOver");
     
-    // Disable buttons temporarily
     disableButtons();
-    
-    // Re-enable buttons after a short delay
-    setTimeout(() => {
-        enableButtons();
-    }, 2000);
+    setTimeout(enableButtons, 2000);
 }
 
 function disableButtons() {
-    CHOICES.forEach(choice => {
+    GAME_CONFIG.CHOICES.forEach(choice => {
         const button = document.querySelector(`#${choice}Button`);
         button.disabled = true;
         button.style.opacity = "0.5";
@@ -92,7 +87,7 @@ function disableButtons() {
 }
 
 function enableButtons() {
-    CHOICES.forEach(choice => {
+    GAME_CONFIG.CHOICES.forEach(choice => {
         const button = document.querySelector(`#${choice}Button`);
         button.disabled = false;
         button.style.opacity = "1";
@@ -111,7 +106,7 @@ function updateScore(playerWins) {
     updateScoreDisplay();
     
     // Check if game is over
-    if (gameState.round >= MAX_ROUNDS) {
+    if (gameState.round >= GAME_CONFIG.MAX_ROUNDS) {
         endGame();
     }
 }
@@ -143,7 +138,7 @@ function resetGame() {
 
 function handlePlayerChoice(choice) {
     // If game is over, clicking any button starts a new game
-    if (gameState.round >= MAX_ROUNDS) {
+    if (gameState.round >= GAME_CONFIG.MAX_ROUNDS) {
         resetGame();
     }
     
@@ -158,7 +153,7 @@ function handlePlayerChoice(choice) {
 }
 
 function initializeGame() {
-    CHOICES.forEach(choice => {
+    GAME_CONFIG.CHOICES.forEach(choice => {
         const button = document.querySelector(`#${choice}Button`);
         button.addEventListener("click", () => handlePlayerChoice(choice));
     });
